@@ -3,7 +3,8 @@ require('dotenv').config()
 const prefix = 'm!'
 const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g
 
-const youtube = require('youtube-search')
+const Youtube = require('simple-youtube-api')
+const youtube = new Youtube(process.env.GOOGLEKEY)
 const ytdlDiscord = require('ytdl-core-discord')
 const ytdl = require('ytdl-core')
 
@@ -21,6 +22,8 @@ client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`)
     console.log(await client.generateInvite())
 })
+
+client.on('error', err => console.error(err.message))
 
 client.on('message', async message => {
 
@@ -51,7 +54,7 @@ client.on('message', async message => {
         }
         guildData.connection.dispatcher.end('stopped')
         guildData.voiceChannel.leave()
-        guildData.playlist = []
+        client.database.delete(message.guild.id)
         message.channel.send(`<:success:560328302523580416> Stopped playing music.`)
     }
 
@@ -87,11 +90,15 @@ client.on('message', async message => {
         }
 
         let [youtubeURL] = args[0].match(youtubeRegex) || []
-        
+
         if (!youtubeURL) {
             try {
-                const video = await searchYoutube(args.join(' '))
-                youtubeURL = video[0].link
+                const [video] = await youtube.searchVideos(args.join(' '), 1)
+                if (!video) {
+                    message.channel.send('<:error:560328317505372170> No videos came up with that search term.')
+                    return
+                }
+                youtubeURL = 'https://www.youtube.com/watch?v=' + video.id
             } catch (err) {
                 message.channel.send('<:error:560328317505372170> There was an error searching that video.')
             }
@@ -111,7 +118,7 @@ client.on('message', async message => {
                     voiceChannel: message.member.voiceChannel
                 })
 
-                message.channel.send(`<:success:560328302523580416> Added **${title} - ${channelName} (${parseSeconds(length)})** to playlist.`)
+                message.channel.send(`<:success:560328302523580416> Added **${title} - ${channelName}** (${parseSeconds(length)}) to playlist.`)
                 return
             }
 
@@ -142,7 +149,7 @@ client.on('message', async message => {
                         return
                     }
                     const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
-                    message.channel.send(`<:success:560328302523580416> Started playing **${playlistItem.title} - ${playlistItem.channelName} (${parseSeconds(playlistItem.length)})**`)
+                    message.channel.send(`<:note:560419093375877130> Now playing **${playlistItem.title} - ${playlistItem.channelName}** (${parseSeconds(playlistItem.length)})`)
                     dispatcher.on('end', reason => {
                         const { playlist } = guildData
                         if (reason !== 'skipped') { playlist.shift() }
@@ -166,20 +173,8 @@ client.on('message', async message => {
 
 client.login(process.env.TOKEN)
 
-function searchYoutube(terms) {
-    return new Promise((resolve, reject) => {
-        youtube(terms, youtubeOptions, (err, results) => {
-            if (err) {
-                reject(err)
-                return
-            }
-            resolve(results)
-        })
-    })
-}
-
 function parseSeconds(seconds) {
     const minutes = Math.floor(seconds / 60) || '00'
     const remainingSeconds = seconds % 60 || '00'
-    return `${minutes} min ${remainingSeconds}s`
+    return `${minutes}min ${remainingSeconds}s`
 }
