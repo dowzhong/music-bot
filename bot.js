@@ -29,6 +29,24 @@ client.on('message', async message => {
     const args = message.content.split(' ')
     const command = args.shift().toLowerCase().slice(prefix.length)
 
+    if (command === 'queue') {
+        const guildData = client.database.get(message.guild.id)
+        if (!guildData) {
+            message.channel.send('❌ You have no songs queued')
+            return
+        }
+
+        const songs = guildData.playlist.map((song, i) => {
+            return `**${i + 1}.** ${song.title}\n`
+        })
+
+        const embed = new Discord.RichEmbed()
+            .setColor(0xA787F1)
+            .setDescription(songs)
+            .setTimestamp()
+        message.channel.send({ embed })
+    }
+
     if (command === 'play') {
 
         if (!message.member.voiceChannel) {
@@ -99,6 +117,7 @@ client.on('message', async message => {
                 message.channel.send('❌ There was an error loading that video.')
             }
         }
+    }
 
     //     //input is a search term.
     //     youtube(
