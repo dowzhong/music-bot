@@ -4,6 +4,7 @@
   "description": "",
   "main": "bot.js",
   "dependencies": {
+    "decache": "^4.5.1",
     "discord.js": "^11.4.2",
     "dotenv": "^7.0.0",
     "nhentai-js": "^3.2.0",
