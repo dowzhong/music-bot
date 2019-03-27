@@ -1,6 +1,8 @@
 const { RichEmbed } = require('discord.js')
 
 module.exports = {
+    usage: 'queue',
+    description: 'Shows current playlist.',
     run(message, args) {
         const guildData = message.client.database.get(message.guild.id)
         if (!guildData) {

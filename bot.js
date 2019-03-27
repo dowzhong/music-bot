@@ -7,8 +7,7 @@ const prefix = 'm!'
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
-const commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js')).map(file => file.slice(0, -3))
-
+client.commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js')).map(file => file.slice(0, -3))
 client.database = new Map()
 
 client.on('ready', async () => {
@@ -25,8 +24,12 @@ client.on('message', async message => {
     const args = message.content.split(' ')
     const command = args.shift().toLowerCase().slice(prefix.length)
 
-    if (commands.includes(command)) {
-        require(`./commands/${command}.js`).run(message, args)
+    if (client.commands.includes(command)) {
+        try {
+            require(`./commands/${command}.js`).run(message, args)
+        } catch (err) {
+            message.channel.send('<:error:560328317505372170> An unexpected error has occured when running that command.')
+        }
     }
 
 })

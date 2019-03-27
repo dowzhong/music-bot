@@ -9,6 +9,8 @@ const { parseSeconds } = require('../utils.js')
 
 
 module.exports = {
+    usage: 'play {search term | youtube url}',
+    description: 'Plays a song given a youtube URL or search.',
     async run(message, args) {
         if (!message.member.voiceChannel) {
             message.channel.send('<:error:560328317505372170> You must be in a voice channel first!')

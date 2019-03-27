@@ -1,4 +1,6 @@
 module.exports = {
+    usage: 'skip {song number?}',
+    description: 'Skips a song. Don\'t provide a number to skip the currently playing song.',
     async run(message, args) {
         const guildData = message.client.database.get(message.guild.id)
         if (!guildData) {

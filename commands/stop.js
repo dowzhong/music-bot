@@ -1,7 +1,9 @@
 module.exports = {
+    usage: 'stop',
+    description: 'Stops playing music.',
     async run(message, args) {
         const guildData = message.client.database.get(message.guild.id)
-        if (!guildData.connection) {
+        if (!guildData) {
             message.channel.send('<:error:560328317505372170> I\'m not playing anything right now.')
             return
         }
