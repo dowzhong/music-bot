@@ -57,7 +57,7 @@ client.on('message', async message => {
                         song: youtubeLink[0]
                     })
 
-                    message.channel.send(`✔ Added **${title} - ${channelName} (${parseSeconds(length)}m)** to playlist.`)
+                    message.channel.send(`✔ Added **${title} - ${channelName} (${parseSeconds(length)})** to playlist.`)
                     return
                 }
 
@@ -78,16 +78,17 @@ client.on('message', async message => {
                     const connection = await message.member.voiceChannel.join()
 
 
-                    async function play(song) {
-                        const dispatcher = connection.playOpusStream(await ytdlDiscord(song, { passes: 3 }))
-                        message.channel.send(`✔ Started playing **${title} - ${channelName} (${parseSeconds(length)}m)**`)
+                    async function play(playlistItem) {
+                        const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
+                        message.channel.send(`✔ Started playing **${playlistItem.title} - ${playlistItem.channelName} (${parseSeconds(playlistItem.length)})**`)
                         dispatcher.on('end', reason => {
                             const { playlist } = client.database.get(message.guild.id)
-                            play(playlist[0].song)
+                            playlist.shift()
+                            play(playlist[0])
                         })
                     }
 
-                    play(youtubeLink[0])
+                    play(client.database.get(message.guild.id).playlist[0])
 
                 } catch (err) {
                     console.error(err)
@@ -112,7 +113,7 @@ client.on('message', async message => {
 function parseSeconds(seconds) {
     const minutes = Math.floor(seconds / 60) || '00'
     const remainingSeconds = seconds % 60 || '00'
-    return `${minutes}:${remainingSeconds}`
+    return `${minutes} min ${remainingSeconds}s`
 }
 
 client.login(process.env.TOKEN)
