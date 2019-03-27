@@ -83,7 +83,7 @@ client.on('message', async message => {
                         message.channel.send(`✔ Started playing **${title} - ${channelName} (${parseSeconds(length)}m)**`)
                         dispatcher.on('end', reason => {
                             const { playlist } = client.database.get(message.guild.id)
-                            play(playlist[0])
+                            play(playlist[0].song)
                         })
                     }
 
