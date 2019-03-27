@@ -34,16 +34,37 @@ client.on('message', async message => {
 
     if (command === 'skip') {
         const guildData = client.database.get(message.guild.id)
-        if (!guildData.playlist.length) {
+        if (!guildData) {
             message.channel.send('<:error:560328317505372170> You have no songs to skip.')
             return
         }
-        const songToSkip = parseInt(args[0]) || 0
 
-        const [deleted] = guildData.playlist.splice(songToSkip, 1)
-        message.channel.send(`<:success:560328302523580416> Skipped **${deleted.title} - ${deleted.channelName}**.`)
+        if (message.member.hasPermission('ADMINISTRATOR') || guildData.voiceChannel.members.size < 5) {
+            skip()
+            return
+        }
 
-        if (songToSkip === 0) { guildData.connection.dispatcher.end('skipped') }
+        const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2)
+        const askForVote = await message.channel.send(`**VOTE:** Skip current song? Required votes: ${requiredVotes}`)
+        askForVote.react('👍')
+
+        const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.name === '👍' && !user.bot, { max: requiredVotes, time: 15000 })
+        vote.on('end', votes => {
+            if (votes.size < requiredVotes) {
+                message.channel.send('👎 Not enough people voted. Song will not be skipped.')
+                return
+            }
+            skip()
+        })
+
+        function skip() {
+            const songToSkip = parseInt(args[0]) || 0
+
+            const [deleted] = guildData.playlist.splice(songToSkip, 1)
+            message.channel.send(`<:success:560328302523580416> Skipped **${deleted.title} - ${deleted.channelName}**.`)
+
+            if (songToSkip === 0) { guildData.connection.dispatcher.end('skipped') }
+        }
     }
 
     if (command === 'stop') {
@@ -52,10 +73,32 @@ client.on('message', async message => {
             message.channel.send('<:error:560328317505372170> I\'m not playing anything right now.')
             return
         }
-        guildData.connection.dispatcher.end('stopped')
-        guildData.voiceChannel.leave()
-        client.database.delete(message.guild.id)
-        message.channel.send(`<:success:560328302523580416> Stopped playing music.`)
+
+        if (message.member.hasPermission('ADMINISTRATOR') || guildData.voiceChannel.members.size < 5) {
+            stop()
+            return
+        }
+
+        const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2)
+        const askForVote = await message.channel.send(`**VOTE:** Stop playing music? Required votes: ${requiredVotes}`)
+        askForVote.react('👍')
+
+        const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.name === '👍' && !user.bot, { max: requiredVotes, time: 15000 })
+        vote.on('end', votes => {
+            if (votes.size < requiredVotes) {
+                message.channel.send('👎 Not enough people voted. Music playing will not be stopped.')
+                return
+            }
+            stop()
+        })
+
+        function stop() {
+            guildData.connection.dispatcher.end('stopped')
+            guildData.voiceChannel.leave()
+            client.database.delete(message.guild.id)
+            message.channel.send(`<:success:560328302523580416> Stopped playing music.`)
+        }
+
     }
 
     if (command === 'queue') {
