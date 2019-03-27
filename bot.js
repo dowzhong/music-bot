@@ -100,13 +100,13 @@ client.on('message', async message => {
             }
         }
 
-        //input is a search term.
-        youtube(
-            'music', youtubeOptions, function (err, results) {
-                if (err) return console.log(err)
-                console.log(results)
-            })
-    }
+    //     //input is a search term.
+    //     youtube(
+    //         'music', youtubeOptions, function (err, results) {
+    //             if (err) return console.log(err)
+    //             console.log(results)
+    //         })
+    // }
 
 })
 
