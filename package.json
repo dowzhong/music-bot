@@ -1,0 +1,30 @@
+{
+  "name": "music-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "dotenv": "^7.0.0",
+    "nhentai-js": "^3.2.0",
+    "opusscript": "^0.0.6",
+    "youtube-search": "^1.1.4",
+    "ytdl-core-discord": "^1.0.3",
+    "ytdl-core": "^0.29.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cthuluhoop123/music-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cthuluhoop123/music-bot/issues"
+  },
+  "homepage": "https://github.com/cthuluhoop123/music-bot#readme"
+}

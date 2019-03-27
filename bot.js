@@ -86,76 +86,80 @@ client.on('message', async message => {
             return
         }
 
-        const youtubeLink = args[0].match(youtubeRegex)
-
-
-
-        if (youtubeLink) {
-            //is a youtube link. Handle that link with ytdl-core        
-
+        let [youtubeURL] = args[0].match(youtubeRegex) || []
+        
+        if (!youtubeURL) {
             try {
-                const { title, author: { name: channelName }, length_seconds: length } = await ytdl.getBasicInfo(youtubeLink[0], { filter: 'audioonly' })
-                let guildData = client.database.get(message.guild.id)
-                if (guildData) {
-                    guildData.playlist.push({
+                const video = await searchYoutube(args.join(' '))
+                youtubeURL = video[0].link
+            } catch (err) {
+                message.channel.send('<:error:560328317505372170> There was an error searching that video.')
+            }
+        }
+        //is a youtube link. Handle that link with ytdl-core        
+
+        try {
+            const { title, author: { name: channelName }, length_seconds: length } = await ytdl.getBasicInfo(youtubeURL, { filter: 'audioonly' })
+            let guildData = client.database.get(message.guild.id)
+            if (guildData) {
+                guildData.playlist.push({
+                    title,
+                    channelName,
+                    length,
+                    requestedBy: message.member,
+                    song: youtubeURL,
+                    voiceChannel: message.member.voiceChannel
+                })
+
+                message.channel.send(`<:success:560328302523580416> Added **${title} - ${channelName} (${parseSeconds(length)})** to playlist.`)
+                return
+            }
+
+            guildData = {
+                playing: false,
+                voiceChannel: message.member.voiceChannel,
+                playlist: [
+                    {
                         title,
                         channelName,
                         length,
                         requestedBy: message.member,
-                        song: youtubeLink[0],
-                        voiceChannel: message.member.voiceChannel
-                    })
-
-                    message.channel.send(`<:success:560328302523580416> Added **${title} - ${channelName} (${parseSeconds(length)})** to playlist.`)
-                    return
-                }
-
-                guildData = {
-                    playing: false,
-                    voiceChannel: message.member.voiceChannel,
-                    playlist: [
-                        {
-                            title,
-                            channelName,
-                            length,
-                            requestedBy: message.member,
-                            song: youtubeLink[0],
-                        }
-                    ]
-                }
-
-                client.database.set(message.guild.id, guildData)
-
-                try {
-                    const connection = await message.member.voiceChannel.join()
-                    guildData.connection = connection
-
-                    async function play(playlistItem) {
-                        if (!playlistItem) {
-                            guildData.voiceChannel.leave()
-                            client.database.delete(message.guild.id)
-                            return
-                        }
-                        const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
-                        message.channel.send(`<:success:560328302523580416> Started playing **${playlistItem.title} - ${playlistItem.channelName} (${parseSeconds(playlistItem.length)})**`)
-                        dispatcher.on('end', reason => {
-                            const { playlist } = guildData
-                            if (reason !== 'skipped') { playlist.shift() }
-                            if (reason !== 'stopped') { play(playlist[0]) }
-                        })
-                        dispatcher.on('error', console.error)
+                        song: youtubeURL,
                     }
+                ]
+            }
 
-                    play(guildData.playlist[0])
+            client.database.set(message.guild.id, guildData)
 
-                } catch (err) {
-                    console.error(err)
-                    message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.')
+            try {
+                const connection = await message.member.voiceChannel.join()
+                guildData.connection = connection
+
+                async function play(playlistItem) {
+                    if (!playlistItem) {
+                        guildData.voiceChannel.leave()
+                        client.database.delete(message.guild.id)
+                        return
+                    }
+                    const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
+                    message.channel.send(`<:success:560328302523580416> Started playing **${playlistItem.title} - ${playlistItem.channelName} (${parseSeconds(playlistItem.length)})**`)
+                    dispatcher.on('end', reason => {
+                        const { playlist } = guildData
+                        if (reason !== 'skipped') { playlist.shift() }
+                        if (reason !== 'stopped') { play(playlist[0]) }
+                    })
+                    dispatcher.on('error', console.error)
                 }
+
+                play(guildData.playlist[0])
 
             } catch (err) {
-                message.channel.send('<:error:560328317505372170> There was an error loading that video.')
+                console.error(err)
+                message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.')
             }
+
+        } catch (err) {
+            message.channel.send('<:error:560328317505372170> There was an error loading that video.')
         }
     }
 })
