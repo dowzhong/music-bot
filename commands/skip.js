@@ -14,7 +14,7 @@ module.exports = {
         }
 
         const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2)
-        const askForVote = await message.channel.send(`**VOTE:** Skip current song? Required votes: ${requiredVotes}`)
+        const askForVote = await message.channel.send(`<:ballot:560656726572007444> Skip current song? Required votes: ${requiredVotes}`)
         askForVote.react('👍')
 
         const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.name === '👍' && !user.bot, { max: requiredVotes, time: 15000 })

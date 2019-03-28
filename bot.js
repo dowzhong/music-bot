@@ -28,7 +28,7 @@ client.on('message', async message => {
         try {
             require(`./commands/${command}.js`).run(message, args)
         } catch (err) {
-            message.channel.send('<:error:560328317505372170> An unexpected error has occured when running that command.')
+            message.channel.send('<:error:560328317505372170> An unexpected error occured when running that command.')
         }
     }
 
