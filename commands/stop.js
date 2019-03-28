@@ -8,7 +8,7 @@ module.exports = {
             return
         }
 
-        if (message.member.hasPermission('ADMINISTRATOR')) {
+        if (message.member.hasPermission('ADMINISTRATOR') || guildData.voiceChannel.members.size < 5) {
             stop()
             return
         }
