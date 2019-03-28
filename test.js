@@ -1,10 +1,3 @@
-require('dotenv').config()
-const Youtube = require('simple-youtube-api')
-const youtube = new Youtube(process.env.GOOGLEKEY)
+const { parseSeconds } = require('./utils.js')
 
-
-youtube.searchVideos('aaaaaaaaaaaaidiaij[[[[]]', 1)
-    .then(results => {
-        console.log(results);
-    })
-    .catch(console.log)
+console.log(parseSeconds(2407))

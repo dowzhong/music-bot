@@ -21,7 +21,7 @@ module.exports = {
             message.channel.send('<:error:560328317505372170> I cannot join your voice channel. You might need to modify my permissions or join another channel.')
             return
         }
-
+        
         let [youtubeURL] = args[0].match(youtubeRegex) || []
 
         if (!youtubeURL) {
@@ -33,7 +33,9 @@ module.exports = {
                 }
                 youtubeURL = 'https://www.youtube.com/watch?v=' + video.id
             } catch (err) {
+                console.error(err)
                 message.channel.send('<:error:560328317505372170> There was an error searching that video.')
+                return
             }
         }
 
@@ -81,6 +83,7 @@ module.exports = {
                         return
                     }
                     const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
+                    playlistItem.startedPlaying = Date.now()
                     message.channel.send(`<:note:560419093375877130> Now playing **${playlistItem.title} - ${playlistItem.channelName}** (${parseSeconds(playlistItem.length)})`)
                     dispatcher.on('end', reason => {
                         const { playlist } = guildData
@@ -98,6 +101,7 @@ module.exports = {
             }
 
         } catch (err) {
+            console.error(err)
             message.channel.send('<:error:560328317505372170> There was an error loading that video.')
         }
     }

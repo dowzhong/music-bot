@@ -7,6 +7,8 @@ const prefix = 'm!'
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
+const decache = require('decache')
+
 client.commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js')).map(file => file.slice(0, -3))
 client.database = new Map()
 
@@ -27,7 +29,9 @@ client.on('message', async message => {
     if (client.commands.includes(command)) {
         try {
             require(`./commands/${command}.js`).run(message, args)
+            decache(`./commands/${command}.js`)
         } catch (err) {
+            console.error(err)
             message.channel.send('<:error:560328317505372170> An unexpected error occured when running that command.')
         }
     }
