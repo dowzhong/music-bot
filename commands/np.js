@@ -1,6 +1,6 @@
 const { RichEmbed } = require('discord.js')
 const { parseSeconds } = require('../utils.js')
-const bar = '------------------------------'
+const bar = '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□'
 
 module.exports = {
     usage: 'np',
@@ -14,14 +14,14 @@ module.exports = {
 
         const timeSincePlayingStarted = Math.round((Date.now() - guildData.playlist[0].startedPlaying) / 1000)
         const completed = timeSincePlayingStarted / guildData.playlist[0].length
-        const progressBar = bar.split('').map((progress, i) => i <= Math.floor(completed * bar.length) ? '▇' : progress)
+        const progressBar = bar.split('').map((progress, i) => i <= Math.floor(completed * bar.length) ? '■' : progress)
 
         const embed = new RichEmbed()
             .setAuthor(`Currently Playing: ${guildData.playlist[0].title}`)
-            .setDescription(`**[${parseSeconds(timeSincePlayingStarted)} ${progressBar.join('')}] ${parseSeconds(guildData.playlist[0].length)}**`)
+            .setDescription(`**${parseSeconds(timeSincePlayingStarted)} [${progressBar.join('')}] ${parseSeconds(guildData.playlist[0].length)}**`)
             .setColor(0xA787F1)
         if (guildData.playlist[1]) {
-            embed.setFooter(`Upcoming: ${guildData.playlist[1].title}`)
+            embed.setFooter(`Coming up: ${guildData.playlist[1].title}`)
         }
 
         message.channel.send({ embed })
