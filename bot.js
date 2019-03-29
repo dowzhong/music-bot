@@ -2,6 +2,8 @@ require('dotenv').config()
 
 const fs = require('fs')
 
+const decache = require('decache')
+
 const prefix = 'm!'
 
 const Discord = require('discord.js')
@@ -13,6 +15,7 @@ client.database = new Map()
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`)
     console.log(await client.generateInvite())
+    client.user.setActivity('m!help', { type: 'LISTENING' })
 })
 
 client.on('error', err => console.error(err.message))
@@ -27,6 +30,7 @@ client.on('message', async message => {
     if (client.commands.includes(command)) {
         try {
             require(`./commands/${command}.js`).run(message, args)
+            decache(`./commands/${command}.js`)
         } catch (err) {
             message.channel.send('<:error:560328317505372170> An unexpected error has occured when running that command.')
         }

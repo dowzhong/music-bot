@@ -11,7 +11,9 @@ module.exports = {
             return `**${usage}**: ${description}`
         }).filter(Boolean).join('\n')
         const embed = new RichEmbed()
+            .setAuthor('Here are the commands you an use:', message.client.user.displayAvatarURL)
             .setDescription(helpMessage)
+            .setTimestamp()
             .setColor(0xA787F1)
         await message.channel.send({ embed })
     }
