@@ -11,7 +11,7 @@ module.exports = {
         }
 
         const songs = guildData.playlist.map((song, i) => {
-            return `${i === 0 ? `**Now Playing:**` : `**${i}.**`}  ${song.title} \`Requested by: ${song.requestedBy.displayName}\`\n`
+            return `${i === 0 ? `**Now Playing:**` : `**${i}.**`}  [${song.title}](${song.song}) \`Requested by: ${song.requestedBy.displayName}\`\n`
         })
 
         const embed = new RichEmbed()
