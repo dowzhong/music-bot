@@ -12,6 +12,7 @@ module.exports = {
     usage: 'play {search term | youtube url}',
     description: 'Plays a song given a youtube URL or search.',
     async run(message, args) {
+
         if (!message.member.voiceChannel) {
             message.channel.send('<:error:560328317505372170> You must be in a voice channel first!')
             return
@@ -19,6 +20,11 @@ module.exports = {
 
         if (!message.member.voiceChannel.joinable) {
             message.channel.send('<:error:560328317505372170> I cannot join your voice channel. You might need to modify my permissions or join another channel.')
+            return
+        }
+
+        if (!args.length) {
+            message.channel.send('<:error:560328317505372170> Please specify either a search term or a Youtube URL.')
             return
         }
         

@@ -9,8 +9,6 @@ const prefix = 'm!'
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
-const decache = require('decache')
-
 client.commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js')).map(file => file.slice(0, -3))
 client.database = new Map()
 
