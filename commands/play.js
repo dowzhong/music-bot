@@ -30,6 +30,8 @@ module.exports = {
         
         let [youtubeURL] = args[0].match(youtubeRegex) || []
 
+        message.channel.send('<:searching:561046688547209217> Looking up the video...')
+
         if (!youtubeURL) {
             try {
                 const [video] = await youtube.searchVideos(args.join(' '), 1)
