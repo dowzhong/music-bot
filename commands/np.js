@@ -14,12 +14,11 @@ module.exports = {
 
         const timeSincePlayingStarted = Math.round((Date.now() - guildData.playlist[0].startedPlaying) / 1000)
         const completed = timeSincePlayingStarted / guildData.playlist[0].length
-        const progressBar = bar.split('')
-        progressBar.splice(Math.floor(completed * bar.length), 1, '⚫')
+        const progressBar = bar.split('').map((progress, i) => i <= Math.floor(completed * bar.length) ? '▇' : progress)
 
         const embed = new RichEmbed()
             .setAuthor(`Currently Playing: ${guildData.playlist[0].title}`)
-            .setDescription(`**${parseSeconds(timeSincePlayingStarted)} ${progressBar.join('')} ${parseSeconds(guildData.playlist[0].length)}**`)
+            .setDescription(`**[${parseSeconds(timeSincePlayingStarted)} ${progressBar.join('')}] ${parseSeconds(guildData.playlist[0].length)}**`)
             .setColor(0xA787F1)
         if (guildData.playlist[1]) {
             embed.setFooter(`Upcoming: ${guildData.playlist[1].title}`)
