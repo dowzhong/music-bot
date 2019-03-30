@@ -12,7 +12,7 @@ module.exports = {
             skip()
             return
         }
-ß
+
         const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2) - 1
         const askForVote = await message.channel.send(`<:ballot:560656726572007444> Skip current song? Click on the reaction to vote. Required votes: ${requiredVotes}`)
         askForVote.react(message.client.emojis.get('560658869777334282'))
