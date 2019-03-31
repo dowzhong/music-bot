@@ -7,13 +7,14 @@ module.exports = {
             message.channel.send('<:error:560328317505372170> You have no songs to skip.')
             return
         }
+        
+        const songToSkip = parseInt(args[0]) || 0
 
         if (message.member.hasPermission('ADMINISTRATOR') || guildData.voiceChannel.members.size < 5) {
             skip()
             return
         }
 
-        const songToSkip = parseInt(args[0]) || 0
         const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2) - 1
         const askForVote = await message.channel.send(`<:ballot:560656726572007444> Skip \`${guildData.playlist[songToSkip].title}\`? Click on the reaction to vote. Required votes: ${requiredVotes}`)
         askForVote.react(message.client.emojis.get('560658869777334282'))
