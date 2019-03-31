@@ -13,8 +13,9 @@ module.exports = {
             return
         }
 
+        const songToSkip = parseInt(args[0]) || 0
         const requiredVotes = Math.round(guildData.voiceChannel.members.size / 2) - 1
-        const askForVote = await message.channel.send(`<:ballot:560656726572007444> Skip current song? Click on the reaction to vote. Required votes: ${requiredVotes}`)
+        const askForVote = await message.channel.send(`<:ballot:560656726572007444> Skip **${guildData.playlist[songToSkip].title}**? Click on the reaction to vote. Required votes: ${requiredVotes}`)
         askForVote.react(message.client.emojis.get('560658869777334282'))
 
         const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.id === '560658869777334282' && !user.bot, { max: requiredVotes, time: 15000 })
@@ -28,8 +29,6 @@ module.exports = {
         })
 
         function skip() {
-            const songToSkip = parseInt(args[0]) || 0
-
             const [deleted] = guildData.playlist.splice(songToSkip, 1)
             message.channel.send(`<:success:560328302523580416> Skipped **${deleted.title} - ${deleted.channelName}**.`)
 
