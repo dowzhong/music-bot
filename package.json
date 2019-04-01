@@ -9,7 +9,9 @@
     "dotenv": "^7.0.0",
     "nhentai-js": "^3.2.0",
     "opusscript": "^0.0.6",
+    "sequelize": "^5.2.8",
     "simple-youtube-api": "^5.1.1",
+    "sqlite3": "^4.0.6",
     "youtube-search": "^1.1.4",
     "ytdl-core": "^0.29.1",
     "ytdl-core-discord": "^1.0.3"
