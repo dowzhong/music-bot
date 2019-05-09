@@ -1,7 +1,6 @@
 const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g
 
-const Youtube = require('simple-youtube-api')
-const youtube = new Youtube(process.env.GOOGLEKEY)
+const ytSearch = require('yt-search')
 const ytdlDiscord = require('ytdl-core-discord')
 const ytdl = require('ytdl-core')
 
@@ -27,22 +26,22 @@ module.exports = {
             message.channel.send('<:error:560328317505372170> Please specify either a search term or a Youtube URL.')
             return
         }
-        
+
         let [youtubeURL] = args[0].match(youtubeRegex) || []
 
-        message.channel.send('<:searching:561046688547209217> Looking up the video...')
+        await message.channel.send('<:searching:561046688547209217> Looking up the video...')
 
         if (!youtubeURL) {
             try {
-                const [video] = await youtube.searchVideos(args.join(' '), 1)
+                const [video] = await searchVideos(args.join(' '))
                 if (!video) {
-                    message.channel.send('<:error:560328317505372170> No videos came up with that search term.')
+                    await message.channel.send('<:error:560328317505372170> No videos came up with that search term.')
                     return
                 }
-                youtubeURL = 'https://www.youtube.com/watch?v=' + video.id
+                youtubeURL = 'https://www.youtube.com' + video.url
             } catch (err) {
                 console.error(err)
-                message.channel.send('<:error:560328317505372170> There was an error searching that video.')
+                await message.channel.send('<:error:560328317505372170> There was an error searching that video.')
                 return
             }
         }
@@ -105,12 +104,24 @@ module.exports = {
 
             } catch (err) {
                 console.error(err)
-                message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.')
+                await message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.')
             }
 
         } catch (err) {
             console.error(err)
-            message.channel.send('<:error:560328317505372170> There was an error loading that video.')
+            await message.channel.send('<:error:560328317505372170> There was an error loading that video.')
         }
     }
+}
+
+function searchVideos(query) {
+    return new Promise((resolve, reject) => {
+        ytSearch(query, function (err, results) {
+            if (err) {
+                reject(err)
+                return
+            }
+            resolve(results.videos)
+        })
+    })
 }
