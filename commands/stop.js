@@ -17,7 +17,7 @@ module.exports = {
         const askForVote = await message.channel.send(`<:ballot:560656726572007444> Stop playing music? Click on the reaction to vote. Required votes: ${requiredVotes}`)
         askForVote.react(message.client.emojis.get('560658869777334282'))
 
-        const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.id === '560658869777334282' && !user.bot, { max: requiredVotes, time: 15000 })
+        const vote = askForVote.createReactionCollector((reaction, user) => reaction.emoji.id === '560658869777334282' && !user.bot, { max: requiredVotes, time: 60000 })
         vote.on('end', votes => {
             askForVote.delete()
             if (votes.size < requiredVotes) {

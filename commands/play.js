@@ -59,7 +59,7 @@ module.exports = {
                     voiceChannel: message.member.voiceChannel
                 })
 
-                message.channel.send(`<:success:560328302523580416> Added **${title} - ${channelName}** (${parseSeconds(length)}) to playlist.`)
+                message.channel.send(`<:success:560328302523580416> Added \`${title} - ${channelName}\` (${parseSeconds(length)}) to playlist.`)
                 return
             }
 
@@ -91,7 +91,7 @@ module.exports = {
                     }
                     const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
                     playlistItem.startedPlaying = Date.now()
-                    message.channel.send(`<:note:560419093375877130> Now playing **${playlistItem.title} - ${playlistItem.channelName}** (${parseSeconds(playlistItem.length)})`)
+                    message.channel.send(`<:note:560419093375877130> Now playing \`${playlistItem.title} - ${playlistItem.channelName}\` (${parseSeconds(playlistItem.length)})`)
                     dispatcher.on('end', reason => {
                         const { playlist } = guildData
                         if (reason !== 'skipped') { playlist.shift() }

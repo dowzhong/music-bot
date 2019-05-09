@@ -18,6 +18,8 @@ client.on('ready', async () => {
     client.user.setActivity('m!help', { type: 'LISTENING' })
 })
 
+client.on('resume', replayed => client.user.setActivity('m!help', { type: 'LISTENING' }))
+
 client.on('error', err => console.error(err.message))
 
 client.on('message', async message => {
