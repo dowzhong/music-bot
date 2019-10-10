@@ -13,42 +13,42 @@ module.exports = {
     async run(message, args) {
 
         if (!message.member.voiceChannel) {
-            message.channel.send('<:error:560328317505372170> You must be in a voice channel first!')
-            return
+            message.channel.send('<:error:560328317505372170> You must be in a voice channel first!');
+            return;
         }
 
         if (!message.member.voiceChannel.joinable) {
-            message.channel.send('<:error:560328317505372170> I cannot join your voice channel. You might need to modify my permissions or join another channel.')
-            return
+            message.channel.send('<:error:560328317505372170> I cannot join your voice channel. You might need to modify my permissions or join another channel.');
+            return;
         }
 
         if (!args.length) {
-            message.channel.send('<:error:560328317505372170> Please specify either a search term or a Youtube URL.')
-            return
+            message.channel.send('<:error:560328317505372170> Please specify either a search term or a Youtube URL.');
+            return;
         }
 
-        let [youtubeURL] = args[0].match(youtubeRegex) || []
+        let [youtubeURL] = args[0].match(youtubeRegex) || [];
 
-        await message.channel.send('<:searching:561046688547209217> Looking up the video...')
+        await message.channel.send('<:searching:561046688547209217> Looking up the video...');
 
         if (!youtubeURL) {
             try {
-                const [video] = await searchVideos(args.join(' '))
+                const [video] = await searchVideos(args.join(' '));
                 if (!video) {
-                    await message.channel.send('<:error:560328317505372170> No videos came up with that search term.')
-                    return
+                    await message.channel.send('<:error:560328317505372170> No videos came up with that search term.');
+                    return;
                 }
-                youtubeURL = 'https://www.youtube.com' + video.url
+                youtubeURL = 'https://www.youtube.com' + video.url;
             } catch (err) {
-                console.error(err)
-                await message.channel.send('<:error:560328317505372170> There was an error searching that video.')
-                return
+                console.error(err);
+                await message.channel.send('<:error:560328317505372170> There was an error searching that video.');
+                return;
             }
         }
 
         try {
-            const { title, author: { name: channelName }, length_seconds: length } = await ytdl.getBasicInfo(youtubeURL, { filter: 'audioonly' })
-            let guildData = message.client.database.get(message.guild.id)
+            const { player_response: { videoDetails: { title, lengthSeconds: length } }, author: { name: channelName }, } = await ytdl.getBasicInfo(youtubeURL, { filter: 'audioonly' });
+            let guildData = message.client.database.get(message.guild.id);
             if (guildData) {
                 guildData.playlist.push({
                     title,
@@ -57,10 +57,10 @@ module.exports = {
                     requestedBy: message.member,
                     song: youtubeURL,
                     voiceChannel: message.member.voiceChannel
-                })
+                });
 
-                message.channel.send(`<:success:560328302523580416> Added \`${title} - ${channelName}\` (${parseSeconds(length)}) to playlist.`)
-                return
+                message.channel.send(`<:success:560328302523580416> Added \`${title} - ${channelName}\` (${parseSeconds(length)}) to playlist.`);
+                return;
             }
 
             guildData = {
@@ -75,41 +75,42 @@ module.exports = {
                         song: youtubeURL,
                     }
                 ]
-            }
+            };
 
-            message.client.database.set(message.guild.id, guildData)
+            message.client.database.set(message.guild.id, guildData);
 
             try {
-                const connection = await message.member.voiceChannel.join()
-                guildData.connection = connection
+                const connection = await message.member.voiceChannel.join();
+                console.log('test');
+                guildData.connection = connection;
 
                 async function play(playlistItem) {
                     if (!playlistItem) {
-                        guildData.voiceChannel.leave()
-                        message.client.database.delete(message.guild.id)
-                        return
+                        guildData.voiceChannel.leave();
+                        message.client.database.delete(message.guild.id);
+                        return;
                     }
-                    const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { passes: 3 }))
-                    playlistItem.startedPlaying = Date.now()
-                    message.channel.send(`<:note:560419093375877130> Now playing \`${playlistItem.title} - ${playlistItem.channelName}\` (${parseSeconds(playlistItem.length)})`)
+                    const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { highWaterMark: 10000000, quality: 'highestaudio' }), { passes: 3 });
+                    playlistItem.startedPlaying = Date.now();
+                    message.channel.send(`<:note:560419093375877130> Now playing \`${playlistItem.title} - ${playlistItem.channelName}\` (${parseSeconds(playlistItem.length)})`);
                     dispatcher.on('end', reason => {
                         const { playlist } = guildData
-                        if (reason !== 'skipped') { playlist.shift() }
-                        if (reason !== 'stopped') { play(playlist[0]) }
-                    })
-                    dispatcher.on('error', console.error)
+                        if (reason !== 'skipped') { playlist.shift(); }
+                        if (reason !== 'stopped') { play(playlist[0]); }
+                    });
+                    dispatcher.on('error', console.error);
                 }
 
                 play(guildData.playlist[0])
 
             } catch (err) {
-                console.error(err)
-                await message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.')
+                console.error(err);
+                await message.channel.send('<:error:560328317505372170> Encountered an unexpected error while joining your voice channel.');
             }
 
         } catch (err) {
-            console.error(err)
-            await message.channel.send('<:error:560328317505372170> There was an error loading that video.')
+            console.error(err);
+            await message.channel.send('<:error:560328317505372170> There was an error loading that video.');
         }
     }
 }
@@ -118,10 +119,10 @@ function searchVideos(query) {
     return new Promise((resolve, reject) => {
         ytSearch(query, function (err, results) {
             if (err) {
-                reject(err)
-                return
+                reject(err);
+                return;
             }
-            resolve(results.videos)
-        })
-    })
+            resolve(results.videos);
+        });
+    });
 }
