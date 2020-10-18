@@ -126,7 +126,6 @@ module.exports = {
 function searchVideos(query) {
     return new Promise((resolve, reject) => {
         ytSearch(query, function (err, results) {
-            console.log(results);
             if (err) {
                 reject(err);
                 return;
