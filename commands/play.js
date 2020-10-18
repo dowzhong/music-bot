@@ -38,7 +38,7 @@ module.exports = {
                     await message.channel.send('<:error:560328317505372170> No videos came up with that search term.');
                     return;
                 }
-                youtubeURL = 'https://www.youtube.com' + video.url;
+                youtubeURL = video.url;
             } catch (err) {
                 console.error(err);
                 await message.channel.send('<:error:560328317505372170> There was an error searching that video.');
@@ -47,7 +47,16 @@ module.exports = {
         }
 
         try {
-            const { player_response: { videoDetails: { title, lengthSeconds: length } }, author: { name: channelName }, } = await ytdl.getBasicInfo(youtubeURL, { filter: 'audioonly' });
+            const {
+                player_response: {
+                    videoDetails: { title,
+                        lengthSeconds: length
+                    }
+                },
+                author: {
+                    name: channelName
+                },
+            } = await ytdl.getBasicInfo(youtubeURL, { filter: 'audioonly' });
             let guildData = message.client.database.get(message.guild.id);
             if (guildData) {
                 guildData.playlist.push({
@@ -81,7 +90,6 @@ module.exports = {
 
             try {
                 const connection = await message.member.voiceChannel.join();
-                console.log('test');
                 guildData.connection = connection;
 
                 async function play(playlistItem) {
@@ -118,6 +126,7 @@ module.exports = {
 function searchVideos(query) {
     return new Promise((resolve, reject) => {
         ytSearch(query, function (err, results) {
+            console.log(results);
             if (err) {
                 reject(err);
                 return;
