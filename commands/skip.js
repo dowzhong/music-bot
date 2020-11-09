@@ -7,7 +7,7 @@ module.exports = {
             message.channel.send('<:error:560328317505372170> You have no songs to skip.');
             return;
         }
-        
+
         const songToSkip = parseInt(args[0]) || 0;
 
         if (message.member.hasPermission('ADMINISTRATOR') || guildData.voiceChannel.members.size < 5) {
@@ -33,7 +33,10 @@ module.exports = {
             const [deleted] = guildData.playlist.splice(songToSkip, 1);
             message.channel.send(`<:success:560328302523580416> Skipped \`${deleted.title} - ${deleted.channelName}\`.`);
 
-            if (songToSkip === 0) { guildData.connection.dispatcher.end('skipped'); }
+            if (songToSkip === 0) {
+                if (guildData.connection)
+                    guildData.connection.dispatcher.end('skipped');
+            }
         }
     }
 }
