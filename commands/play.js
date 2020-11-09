@@ -49,7 +49,8 @@ module.exports = {
         try {
             const {
                 player_response: {
-                    videoDetails: { title,
+                    videoDetails: {
+                        title,
                         lengthSeconds: length
                     }
                 },
@@ -102,7 +103,7 @@ module.exports = {
                     playlistItem.startedPlaying = Date.now();
                     message.channel.send(`<:note:560419093375877130> Now playing \`${playlistItem.title} - ${playlistItem.channelName}\` (${parseSeconds(playlistItem.length)})`);
                     dispatcher.on('end', reason => {
-                        const { playlist } = guildData
+                        const { playlist } = guildData;
                         if (reason !== 'skipped') { playlist.shift(); }
                         if (reason !== 'stopped') { play(playlist[0]); }
                     });
