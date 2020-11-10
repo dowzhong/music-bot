@@ -7,11 +7,10 @@ module.exports = {
     description: 'Shows what\'s playing now.',
     async run(message, args) {
         const guildData = message.client.database.get(message.guild.id);
-        if (!guildData) {
+        if (!guildData || !guildData.playlist.length) {
             message.channel.send('<:error:560328317505372170> Nothing is playing right now.');
             return;
         }
-
         const timeSincePlayingStarted = Math.round((Date.now() - guildData.playlist[0].startedPlaying) / 1000);
         const completed = timeSincePlayingStarted / guildData.playlist[0].length;
         const progressBar = bar.split('').map((progress, i) => i <= Math.floor(completed * bar.length) ? '■' : progress);

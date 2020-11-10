@@ -28,7 +28,8 @@ module.exports = {
         });
 
         function stop() {
-            guildData.connection.dispatcher.end('stopped');
+            if (guildData.connection.dispatcher)
+                guildData.connection.dispatcher.end('stopped');
             guildData.voiceChannel.leave();
             message.client.database.delete(message.guild.id);
             message.channel.send(`<:success:560328302523580416> Stopped playing music.`);
