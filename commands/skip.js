@@ -34,7 +34,7 @@ module.exports = {
             message.channel.send(`<:success:560328302523580416> Skipped \`${deleted.title} - ${deleted.channelName}\`.`);
 
             if (songToSkip === 0) {
-                if (guildData.connection)
+                if (guildData.connection.dispatcher)
                     guildData.connection.dispatcher.end('skipped');
             }
         }
