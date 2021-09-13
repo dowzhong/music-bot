@@ -51,6 +51,7 @@ module.exports = {
             const title = video.player_response.videoDetails.title;
             const length = video.player_response.videoDetails.lengthSeconds;
             const channelName = video.player_response.videoDetails.author.name;
+            console.log(video.player_response.videoDetails);
             let guildData = message.client.database.get(message.guild.id);
             if (guildData) {
                 guildData.playlist.push({
