@@ -1,5 +1,7 @@
 const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g
 
+const { Worker } = require('worker_threads');
+
 const ytSearch = require('yt-search')
 const ytdlDiscord = require('ytdl-core-discord')
 const ytdl = require('ytdl-core')
@@ -119,12 +121,10 @@ module.exports = {
 
 function searchVideos(query) {
     return new Promise((resolve, reject) => {
-        ytSearch(query, function (err, results) {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(results.videos);
+        const worker = new Worker(require('path').join(__dirname, '..', 'search.js'), {
+            workerData: query
         });
+        worker.on('message', resolve);
+        worker.on('error', reject);
     });
 }
