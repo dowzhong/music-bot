@@ -100,7 +100,8 @@ module.exports = {
                         }),
                         {
                             volume: .5,
-                            passes: 3
+                            passes: 3,
+                            bitrate: 'auto'
                         }
                     );
                     playlistItem.startedPlaying = Date.now();
