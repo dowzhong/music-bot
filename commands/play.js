@@ -99,7 +99,7 @@ module.exports = {
                             quality: 'highestaudio'
                         }),
                         {
-                            volume: .7,
+                            volume: .5,
                             passes: 3
                         }
                     );
