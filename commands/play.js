@@ -1,13 +1,13 @@
-const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g
+const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g;
 
 const { Worker } = require('worker_threads');
 
-const ytSearch = require('yt-search')
-const ytdlDiscord = require('ytdl-core-discord')
-const ytdl = require('ytdl-core')
+const ytdlDiscord = require('ytdl-core-discord');
+const ytdl = require('ytdl-core');
 
-const { parseSeconds } = require('../utils.js')
+const { parseSeconds } = require('../utils.js');
 
+const worker = new Worker(require('path').join(__dirname, '..', 'search.js'));
 
 module.exports = {
     usage: 'play {search term | youtube url}',
@@ -121,10 +121,23 @@ module.exports = {
 
 function searchVideos(query) {
     return new Promise((resolve, reject) => {
-        const worker = new Worker(require('path').join(__dirname, '..', 'search.js'), {
-            workerData: query
-        });
-        worker.on('message', resolve);
-        worker.on('error', reject);
+        worker.postMessage(query);
+
+        const listener = data => {
+            if (data.query === query) {
+               resolve(data.videos);
+               worker.off('message', listener); 
+            }
+        };
+
+        const rejectListener = err => {
+            if (err.query === query) {
+               reject(err);
+               worker.off('error', rejectListener); 
+            }
+        };
+
+        worker.on('message', listener);
+        worker.once('error', reject);
     });
 }

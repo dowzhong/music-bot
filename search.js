@@ -1,17 +1,25 @@
 const {
     parentPort,
-    workerData
+    workerData,
+    threadId
 } = require('worker_threads');
 
 const ytSearch = require('yt-search');
 
-ytSearch(workerData, function (err, results) {
-    if (err) {
-        throw err;
-    }
+parentPort.on('message', query => {
+    setImmediate(() => {
+        ytSearch(query, function (err, results) {
+            if (err) {
+                throw { query, err };
+            }
 
-    parentPort.postMessage(results.videos.map(video => {
-        const { duration, ...others } = video;
-        return others;
-    }));
+            parentPort.postMessage({
+                query,
+                videos: results.videos.map(video => {
+                    const { duration, ...others } = video;
+                    return others;
+                })
+            });
+        });
+    });
 });

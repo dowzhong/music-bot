@@ -2,6 +2,8 @@ const { RichEmbed } = require('discord.js')
 const { parseSeconds } = require('../utils.js')
 const bar = '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□'
 
+const { threadId } = require('worker_threads');
+
 module.exports = {
     usage: 'np',
     description: 'Shows what\'s playing now.',
@@ -22,7 +24,6 @@ module.exports = {
         if (guildData.playlist[1]) {
             embed.setFooter(`Coming up: ${guildData.playlist[1].title}`);
         }
-
         message.channel.send({ embed });
     }
 }
