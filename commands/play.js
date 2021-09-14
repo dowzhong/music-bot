@@ -99,7 +99,8 @@ module.exports = {
                             quality: 'highestaudio'
                         }),
                         {
-                            volume: 1
+                            volume: .7,
+                            passes: 3
                         }
                     );
                     playlistItem.startedPlaying = Date.now();
