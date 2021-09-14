@@ -3,7 +3,7 @@ const { RichEmbed } = require('discord.js')
 module.exports = {
     usage: 'queue',
     description: 'Shows current playlist.',
-    run(message, args) {
+    async run(message, args) {
         const guildData = message.client.database.get(message.guild.id);
         if (!guildData) {
             message.channel.send('<:error:560328317505372170> You have no songs queued');

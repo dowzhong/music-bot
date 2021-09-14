@@ -2,7 +2,6 @@ const youtubeRegex = /^http(s)?:\/\/www\.youtube\.com\/watch\?v=.*$/g;
 
 const { Worker } = require('worker_threads');
 
-const ytdlDiscord = require('ytdl-core-discord');
 const ytdl = require('ytdl-core');
 
 const { parseSeconds } = require('../utils.js');
@@ -94,7 +93,15 @@ module.exports = {
                         message.client.database.delete(message.guild.id);
                         return;
                     }
-                    const dispatcher = connection.playOpusStream(await ytdlDiscord(playlistItem.song, { highWaterMark: 10000000, quality: 'highestaudio' }), { passes: 3 });
+                    const dispatcher = connection.playStream(
+                        ytdl(playlistItem.song, {
+                            filter: 'audioonly',
+                            quality: 'highestaudio'
+                        }),
+                        {
+                            volume: 1
+                        }
+                    );
                     playlistItem.startedPlaying = Date.now();
                     message.channel.send(`<:note:560419093375877130> Now playing \`${playlistItem.title} - ${playlistItem.channelName}\` (${parseSeconds(playlistItem.length)})`);
                     dispatcher.on('end', reason => {
@@ -105,7 +112,7 @@ module.exports = {
                     dispatcher.on('error', console.error);
                 }
 
-                play(guildData.playlist[0])
+                play(guildData.playlist[0]);
 
             } catch (err) {
                 console.error(err);
@@ -125,15 +132,15 @@ function searchVideos(query) {
 
         const listener = data => {
             if (data.query === query) {
-               resolve(data.videos);
-               worker.off('message', listener); 
+                resolve(data.videos);
+                worker.off('message', listener);
             }
         };
 
         const rejectListener = err => {
             if (err.query === query) {
-               reject(err);
-               worker.off('error', rejectListener); 
+                reject(err);
+                worker.off('error', rejectListener);
             }
         };
 
