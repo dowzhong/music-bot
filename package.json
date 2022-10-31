@@ -14,9 +14,6 @@
     "ytdl-core": "^4.9.1"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cthuluhoop123/music-bot.git"
